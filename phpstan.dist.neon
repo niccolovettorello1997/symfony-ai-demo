@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+
+    paths:
+        - src
+        - tests
+
+    # Symfony extension config
+    symfony:
+        containerXmlPath: var/cache/test/App_KernelTestDebugContainer.xml

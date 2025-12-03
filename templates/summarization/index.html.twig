@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Summarization{% endblock %}
+
+{% block body %}
+<form method="post" action="{{ path('summarization_ui') }}">
+    <div class="mb-3">
+        <label for="text" class="form-label">Text to summarize</label>
+        <textarea class="form-control" id="text" name="text" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Summarize</button>
+</form>
+
+{% if reply is defined %}
+<div class="mt-4">
+    <h5>AI Summary:</h5>
+    <div class="alert alert-success">{{ reply|raw }}</div>
+</div>
+{% endif %}
+{% endblock %}

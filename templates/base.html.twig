@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Symfony AI Demo{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+<div class="container">
+    <h1 class="mb-4">Symfony AI Demo</h1>
+
+    <nav class="mb-4">
+        <div class="btn-group" role="group" aria-label="AI Demo Navigation">
+            <a href="{{ path('chat_ui') }}" class="btn btn-outline-primary">Chat</a>
+            <a href="{{ path('summarization_ui') }}" class="btn btn-outline-primary">Summarization</a>
+            <a href="{{ path('classification_ui') }}" class="btn btn-outline-primary">Classification</a>
+        </div>
+    </nav>
+
+    {% block body %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

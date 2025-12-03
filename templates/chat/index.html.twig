@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat{% endblock %}
+
+{% block body %}
+<form method="post" action="{{ path('chat_ui') }}">
+    <div class="mb-3">
+        <label for="message" class="form-label">Your message</label>
+        <input type="text" class="form-control" id="message" name="message" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>
+
+{% if reply is defined %}
+<div class="mt-4">
+    <h5>AI Reply:</h5>
+    <div class="alert alert-success">{{ reply|raw }}</div>
+</div>
+{% endif %}
+{% endblock %}

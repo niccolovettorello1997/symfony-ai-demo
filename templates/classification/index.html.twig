@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Classification{% endblock %}
+
+{% block body %}
+<form method="post" action="{{ path('classification_ui') }}">
+    <div class="mb-3">
+        <label for="text" class="form-label">Text to classify</label>
+        <textarea class="form-control" id="text" name="text" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="labels" class="form-label">Labels (comma separated)</label>
+        <input type="text" placeholder="label1, label2, ..." class="form-control" id="labels" name="labels">
+    </div>
+    <button type="submit" class="btn btn-primary">Classify</button>
+</form>
+
+{% if reply is defined %}
+<div class="mt-4">
+    <h5>AI Classification:</h5>
+    <div class="alert alert-success">{{ reply|raw }}</div>
+</div>
+{% endif %}
+{% endblock %}

@@ -325,7 +325,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         }>,
  *     },
  *     validation?: bool|array{ // Validation configuration
- *         enabled?: bool, // Default: false
+ *         enabled?: bool, // Default: true
  *         enable_attributes?: bool, // Default: true
  *         static_method?: list<scalar|null>,
  *         translation_domain?: scalar|null, // Default: "validators"
@@ -467,7 +467,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         max_host_connections?: int, // The maximum number of connections to a single host.
  *         default_options?: array{
  *             headers?: array<string, mixed>,
- *             vars?: list<mixed>,
+ *             vars?: array<string, mixed>,
  *             max_redirects?: int, // The maximum number of redirects to follow.
  *             http_version?: scalar|null, // The default HTTP version, typically 1.1 or 2.0, leave to null for the best version.
  *             resolve?: array<string, scalar|null>,
@@ -490,7 +490,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *                 md5?: mixed,
  *             },
  *             crypto_method?: scalar|null, // The minimum version of TLS to accept; must be one of STREAM_CRYPTO_METHOD_TLSv*_CLIENT constants.
- *             extra?: list<mixed>,
+ *             extra?: array<string, mixed>,
  *             rate_limiter?: scalar|null, // Rate limiter name to use for throttling requests. // Default: null
  *             caching?: bool|array{ // Caching configuration.
  *                 enabled?: bool, // Default: false
@@ -543,7 +543,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *                 md5?: mixed,
  *             },
  *             crypto_method?: scalar|null, // The minimum version of TLS to accept; must be one of STREAM_CRYPTO_METHOD_TLSv*_CLIENT constants.
- *             extra?: list<mixed>,
+ *             extra?: array<string, mixed>,
  *             rate_limiter?: scalar|null, // Rate limiter name to use for throttling requests. // Default: null
  *             caching?: bool|array{ // Caching configuration.
  *                 enabled?: bool, // Default: false
@@ -719,6 +719,16 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             api_key: string,
  *             http_client?: string, // Service ID of the HTTP client to use // Default: "http_client"
  *         },
+ *         generic?: array<string, array{ // Default: []
+ *             base_url: string,
+ *             api_key?: string,
+ *             http_client?: string, // Service ID of the HTTP client to use // Default: "http_client"
+ *             model_catalog?: string, // Service ID of the model catalog to use
+ *             supports_completions?: bool, // Default: true
+ *             supports_embeddings?: bool, // Default: true
+ *             completions_path?: string, // Default: "/v1/chat/completions"
+ *             embeddings_path?: string, // Default: "/v1/embeddings"
+ *         }>,
  *         huggingface?: array{
  *             api_key: string,
  *             provider?: string, // Default: "hf-inference"
@@ -773,7 +783,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *     },
  *     model?: array<string, array<string, array{ // Default: []
  *             class?: string, // The fully qualified class name of the model (must extend Symfony\AI\Platform\Model) // Default: "Symfony\\AI\\Platform\\Model"
- *             capabilities?: list<input-audio|input-image|input-messages|input-multiple|input-pdf|input-text|input-multimodal|output-audio|output-image|output-streaming|output-structured|output-text|tool-calling|text-to-speech|speech-to-text|embeddings|thinking>,
+ *             capabilities?: list<value-of<\Symfony\AI\Platform\Capability>|\Symfony\AI\Platform\Capability>,
  *         }>>,
  *     agent?: array<string, array{ // Default: []
  *         platform?: string, // Service name of platform // Default: "Symfony\\AI\\Platform\\PlatformInterface"
@@ -807,7 +817,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         fallback: string, // Service ID of the fallback agent for unmatched requests
  *     }>,
  *     store?: array{
- *         azure_search?: array<string, array{ // Default: []
+ *         azuresearch?: array<string, array{ // Default: []
  *             endpoint: string,
  *             api_key: string,
  *             index_name: string,
@@ -819,7 +829,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             cache_key?: string, // The name of the store will be used if the key is not set
  *             strategy?: string,
  *         }>,
- *         chroma_db?: array<string, array{ // Default: []
+ *         chromadb?: array<string, array{ // Default: []
  *             client?: string, // Default: "Codewithkyrian\\ChromaDB\\Client"
  *             collection: string,
  *         }>,
@@ -833,17 +843,17 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             account_id?: string,
  *             api_key?: string,
  *             index_name?: string,
- *             dimensions: int,
+ *             dimensions?: int, // Default: 1536
  *             metric?: string, // Default: "cosine"
- *             endpoint_url?: string,
+ *             endpoint?: string,
  *         }>,
- *         manticore?: array<string, array{ // Default: []
+ *         manticoresearch?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             table?: string,
- *             field: string,
- *             type: string,
- *             similarity: string,
- *             dimensions: int,
+ *             field?: string, // Default: "_vectors"
+ *             type?: string, // Default: "hnsw"
+ *             similarity?: string, // Default: "cosine"
+ *             dimensions?: int, // Default: 1536
  *             quantization?: string,
  *         }>,
  *         mariadb?: array<string, array{ // Default: []
@@ -859,9 +869,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             endpoint?: string,
  *             api_key?: string,
  *             index_name?: string,
- *             embedder: string,
- *             vector_field: string,
- *             dimensions: int,
+ *             embedder?: string, // Default: "default"
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
  *             semantic_ratio?: float, // The ratio between semantic (vector) and full-text search (0.0 to 1.0). Default: 1.0 (100% semantic) // Default: 1.0
  *         }>,
  *         memory?: array<string, array{ // Default: []
@@ -870,19 +880,19 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         milvus?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             database: string,
+ *             database?: string,
  *             collection: string,
- *             vector_field: string,
- *             dimensions: int,
- *             metric_type?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
+ *             metric_type?: string, // Default: "COSINE"
  *         }>,
  *         mongodb?: array<string, array{ // Default: []
  *             client?: string, // Default: "MongoDB\\Client"
  *             database: string,
- *             collection: string,
+ *             collection?: string,
  *             index_name: string,
- *             vector_field: string,
- *             bulk_write?: bool,
+ *             vector_field?: string, // Default: "vector"
+ *             bulk_write?: bool, // Default: false
  *         }>,
  *         neo4j?: array<string, array{ // Default: []
  *             endpoint?: string,
@@ -891,10 +901,18 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             database?: string,
  *             vector_index_name?: string,
  *             node_name?: string,
- *             vector_field: string,
- *             dimensions: int,
- *             distance: string,
+ *             vector_field?: string, // Default: "embeddings"
+ *             dimensions?: int, // Default: 1536
+ *             distance?: string, // Default: "cosine"
  *             quantization?: bool,
+ *         }>,
+ *         opensearch?: array<string, array{ // Default: []
+ *             endpoint?: string,
+ *             index_name?: string,
+ *             vectors_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
+ *             space_type?: string, // Default: "l2"
+ *             http_client?: string, // Default: "http_client"
  *         }>,
  *         pinecone?: array<string, array{ // Default: []
  *             client?: string, // Default: "Probots\\Pinecone\\Client"
@@ -906,34 +924,34 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             dsn?: string,
  *             username?: string,
  *             password?: string,
- *             table_name: string,
- *             vector_field: string,
- *             distance?: cosine|inner_product|l1|l2, // Distance metric to use for vector similarity search // Default: "l2"
+ *             table_name?: string,
+ *             vector_field?: string, // Default: "embedding"
+ *             distance?: "cosine"|"inner_product"|"l1"|"l2", // Distance metric to use for vector similarity search // Default: "l2"
  *             dbal_connection?: string,
  *         }>,
  *         qdrant?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key?: string,
  *             collection_name?: string,
- *             dimensions: int,
- *             distance: string,
+ *             dimensions?: int, // Default: 1536
+ *             distance?: string, // Default: "Cosine"
  *             async?: bool,
  *         }>,
  *         redis?: array<string, array{ // Default: []
  *             connection_parameters?: mixed, // see https://github.com/phpredis/phpredis?tab=readme-ov-file#example-1
  *             client?: string, // a service id of a Redis client
- *             index_name: string,
+ *             index_name?: string,
  *             key_prefix?: string, // Default: "vector:"
- *             distance?: \Symfony\AI\Store\Bridge\Redis\Distance::Cosine|\Symfony\AI\Store\Bridge\Redis\Distance::L2|\Symfony\AI\Store\Bridge\Redis\Distance::Ip, // Distance metric to use for vector similarity search // Default: "COSINE"
+ *             distance?: "COSINE"|"L2"|"IP", // Distance metric to use for vector similarity search // Default: "COSINE"
  *         }>,
  *         supabase?: array<string, array{ // Default: []
  *             http_client?: string, // Service ID of the HTTP client to use // Default: "http_client"
  *             url: string,
  *             api_key: string,
  *             table?: string,
- *             vector_field?: string,
- *             vector_dimension?: int,
- *             function_name?: string,
+ *             vector_field?: string, // Default: "embedding"
+ *             vector_dimension?: int, // Default: 1536
+ *             function_name?: string, // Default: "match_documents"
  *         }>,
  *         surrealdb?: array<string, array{ // Default: []
  *             endpoint?: string,
@@ -941,23 +959,23 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             password?: string,
  *             namespace?: string,
  *             database?: string,
- *             table: string,
- *             vector_field: string,
- *             strategy: string,
- *             dimensions: int,
+ *             table?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             strategy?: string, // Default: "cosine"
+ *             dimensions?: int, // Default: 1536
  *             namespaced_user?: bool,
  *         }>,
  *         typesense?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             collection: string,
- *             vector_field: string,
- *             dimensions: int,
+ *             collection?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
  *         }>,
  *         weaviate?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             collection: string,
+ *             collection?: string,
  *         }>,
  *     },
  *     message_store?: array{
@@ -1036,18 +1054,313 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         store?: string, // Service name of store // Default: "Symfony\\AI\\Store\\StoreInterface"
  *     }>,
  * }
+ * @psalm-type DoctrineConfig = array{
+ *     dbal?: array{
+ *         default_connection?: scalar|null,
+ *         types?: array<string, string|array{ // Default: []
+ *             class: scalar|null,
+ *         }>,
+ *         driver_schemes?: array<string, scalar|null>,
+ *         connections?: array<string, array{ // Default: []
+ *             url?: scalar|null, // A URL with connection information; any parameter value parsed from this string will override explicitly set parameters
+ *             dbname?: scalar|null,
+ *             host?: scalar|null, // Defaults to "localhost" at runtime.
+ *             port?: scalar|null, // Defaults to null at runtime.
+ *             user?: scalar|null, // Defaults to "root" at runtime.
+ *             password?: scalar|null, // Defaults to null at runtime.
+ *             dbname_suffix?: scalar|null, // Adds the given suffix to the configured database name, this option has no effects for the SQLite platform
+ *             application_name?: scalar|null,
+ *             charset?: scalar|null,
+ *             path?: scalar|null,
+ *             memory?: bool,
+ *             unix_socket?: scalar|null, // The unix socket to use for MySQL
+ *             persistent?: bool, // True to use as persistent connection for the ibm_db2 driver
+ *             protocol?: scalar|null, // The protocol to use for the ibm_db2 driver (default to TCPIP if omitted)
+ *             service?: bool, // True to use SERVICE_NAME as connection parameter instead of SID for Oracle
+ *             servicename?: scalar|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
+ *             sessionMode?: scalar|null, // The session mode to use for the oci8 driver
+ *             server?: scalar|null, // The name of a running database server to connect to for SQL Anywhere.
+ *             default_dbname?: scalar|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *             sslmode?: scalar|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
+ *             sslrootcert?: scalar|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
+ *             sslcert?: scalar|null, // The path to the SSL client certificate file for PostgreSQL.
+ *             sslkey?: scalar|null, // The path to the SSL client key file for PostgreSQL.
+ *             sslcrl?: scalar|null, // The file name of the SSL certificate revocation list for PostgreSQL.
+ *             pooled?: bool, // True to use a pooled server with the oci8/pdo_oracle driver
+ *             MultipleActiveResultSets?: bool, // Configuring MultipleActiveResultSets for the pdo_sqlsrv driver
+ *             instancename?: scalar|null, // Optional parameter, complete whether to add the INSTANCE_NAME parameter in the connection. It is generally used to connect to an Oracle RAC server to select the name of a particular instance.
+ *             connectstring?: scalar|null, // Complete Easy Connect connection descriptor, see https://docs.oracle.com/database/121/NETAG/naming.htm.When using this option, you will still need to provide the user and password parameters, but the other parameters will no longer be used. Note that when using this parameter, the getHost and getPort methods from Doctrine\DBAL\Connection will no longer function as expected.
+ *             driver?: scalar|null, // Default: "pdo_mysql"
+ *             auto_commit?: bool,
+ *             schema_filter?: scalar|null,
+ *             logging?: bool, // Default: true
+ *             profiling?: bool, // Default: true
+ *             profiling_collect_backtrace?: bool, // Enables collecting backtraces when profiling is enabled // Default: false
+ *             profiling_collect_schema_errors?: bool, // Enables collecting schema errors when profiling is enabled // Default: true
+ *             server_version?: scalar|null,
+ *             idle_connection_ttl?: int, // Default: 600
+ *             driver_class?: scalar|null,
+ *             wrapper_class?: scalar|null,
+ *             keep_replica?: bool,
+ *             options?: array<string, mixed>,
+ *             mapping_types?: array<string, scalar|null>,
+ *             default_table_options?: array<string, scalar|null>,
+ *             schema_manager_factory?: scalar|null, // Default: "doctrine.dbal.default_schema_manager_factory"
+ *             result_cache?: scalar|null,
+ *             replicas?: array<string, array{ // Default: []
+ *                 url?: scalar|null, // A URL with connection information; any parameter value parsed from this string will override explicitly set parameters
+ *                 dbname?: scalar|null,
+ *                 host?: scalar|null, // Defaults to "localhost" at runtime.
+ *                 port?: scalar|null, // Defaults to null at runtime.
+ *                 user?: scalar|null, // Defaults to "root" at runtime.
+ *                 password?: scalar|null, // Defaults to null at runtime.
+ *                 dbname_suffix?: scalar|null, // Adds the given suffix to the configured database name, this option has no effects for the SQLite platform
+ *                 application_name?: scalar|null,
+ *                 charset?: scalar|null,
+ *                 path?: scalar|null,
+ *                 memory?: bool,
+ *                 unix_socket?: scalar|null, // The unix socket to use for MySQL
+ *                 persistent?: bool, // True to use as persistent connection for the ibm_db2 driver
+ *                 protocol?: scalar|null, // The protocol to use for the ibm_db2 driver (default to TCPIP if omitted)
+ *                 service?: bool, // True to use SERVICE_NAME as connection parameter instead of SID for Oracle
+ *                 servicename?: scalar|null, // Overrules dbname parameter if given and used as SERVICE_NAME or SID connection parameter for Oracle depending on the service parameter.
+ *                 sessionMode?: scalar|null, // The session mode to use for the oci8 driver
+ *                 server?: scalar|null, // The name of a running database server to connect to for SQL Anywhere.
+ *                 default_dbname?: scalar|null, // Override the default database (postgres) to connect to for PostgreSQL connexion.
+ *                 sslmode?: scalar|null, // Determines whether or with what priority a SSL TCP/IP connection will be negotiated with the server for PostgreSQL.
+ *                 sslrootcert?: scalar|null, // The name of a file containing SSL certificate authority (CA) certificate(s). If the file exists, the server's certificate will be verified to be signed by one of these authorities.
+ *                 sslcert?: scalar|null, // The path to the SSL client certificate file for PostgreSQL.
+ *                 sslkey?: scalar|null, // The path to the SSL client key file for PostgreSQL.
+ *                 sslcrl?: scalar|null, // The file name of the SSL certificate revocation list for PostgreSQL.
+ *                 pooled?: bool, // True to use a pooled server with the oci8/pdo_oracle driver
+ *                 MultipleActiveResultSets?: bool, // Configuring MultipleActiveResultSets for the pdo_sqlsrv driver
+ *                 instancename?: scalar|null, // Optional parameter, complete whether to add the INSTANCE_NAME parameter in the connection. It is generally used to connect to an Oracle RAC server to select the name of a particular instance.
+ *                 connectstring?: scalar|null, // Complete Easy Connect connection descriptor, see https://docs.oracle.com/database/121/NETAG/naming.htm.When using this option, you will still need to provide the user and password parameters, but the other parameters will no longer be used. Note that when using this parameter, the getHost and getPort methods from Doctrine\DBAL\Connection will no longer function as expected.
+ *             }>,
+ *         }>,
+ *     },
+ *     orm?: array{
+ *         default_entity_manager?: scalar|null,
+ *         enable_native_lazy_objects?: bool, // Deprecated: The "enable_native_lazy_objects" option is deprecated and will be removed in DoctrineBundle 4.0, as native lazy objects are now always enabled. // Default: true
+ *         controller_resolver?: bool|array{
+ *             enabled?: bool, // Default: true
+ *             auto_mapping?: bool, // Deprecated: The "auto_mapping" option is deprecated and will be removed in DoctrineBundle 4.0, as it only accepts `false` since 3.0. // Set to true to enable using route placeholders as lookup criteria when the primary key doesn't match the argument name // Default: false
+ *             evict_cache?: bool, // Set to true to fetch the entity from the database instead of using the cache, if any // Default: false
+ *         },
+ *         entity_managers?: array<string, array{ // Default: []
+ *             query_cache_driver?: string|array{
+ *                 type?: scalar|null, // Default: null
+ *                 id?: scalar|null,
+ *                 pool?: scalar|null,
+ *             },
+ *             metadata_cache_driver?: string|array{
+ *                 type?: scalar|null, // Default: null
+ *                 id?: scalar|null,
+ *                 pool?: scalar|null,
+ *             },
+ *             result_cache_driver?: string|array{
+ *                 type?: scalar|null, // Default: null
+ *                 id?: scalar|null,
+ *                 pool?: scalar|null,
+ *             },
+ *             entity_listeners?: array{
+ *                 entities?: array<string, array{ // Default: []
+ *                     listeners?: array<string, array{ // Default: []
+ *                         events?: list<array{ // Default: []
+ *                             type?: scalar|null,
+ *                             method?: scalar|null, // Default: null
+ *                         }>,
+ *                     }>,
+ *                 }>,
+ *             },
+ *             connection?: scalar|null,
+ *             class_metadata_factory_name?: scalar|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
+ *             default_repository_class?: scalar|null, // Default: "Doctrine\\ORM\\EntityRepository"
+ *             auto_mapping?: scalar|null, // Default: false
+ *             naming_strategy?: scalar|null, // Default: "doctrine.orm.naming_strategy.default"
+ *             quote_strategy?: scalar|null, // Default: "doctrine.orm.quote_strategy.default"
+ *             typed_field_mapper?: scalar|null, // Default: "doctrine.orm.typed_field_mapper.default"
+ *             entity_listener_resolver?: scalar|null, // Default: null
+ *             fetch_mode_subselect_batch_size?: scalar|null,
+ *             repository_factory?: scalar|null, // Default: "doctrine.orm.container_repository_factory"
+ *             schema_ignore_classes?: list<scalar|null>,
+ *             validate_xml_mapping?: bool, // Set to "true" to opt-in to the new mapping driver mode that was added in Doctrine ORM 2.14 and will be mandatory in ORM 3.0. See https://github.com/doctrine/orm/pull/6728. // Default: false
+ *             second_level_cache?: array{
+ *                 region_cache_driver?: string|array{
+ *                     type?: scalar|null, // Default: null
+ *                     id?: scalar|null,
+ *                     pool?: scalar|null,
+ *                 },
+ *                 region_lock_lifetime?: scalar|null, // Default: 60
+ *                 log_enabled?: bool, // Default: true
+ *                 region_lifetime?: scalar|null, // Default: 3600
+ *                 enabled?: bool, // Default: true
+ *                 factory?: scalar|null,
+ *                 regions?: array<string, array{ // Default: []
+ *                     cache_driver?: string|array{
+ *                         type?: scalar|null, // Default: null
+ *                         id?: scalar|null,
+ *                         pool?: scalar|null,
+ *                     },
+ *                     lock_path?: scalar|null, // Default: "%kernel.cache_dir%/doctrine/orm/slc/filelock"
+ *                     lock_lifetime?: scalar|null, // Default: 60
+ *                     type?: scalar|null, // Default: "default"
+ *                     lifetime?: scalar|null, // Default: 0
+ *                     service?: scalar|null,
+ *                     name?: scalar|null,
+ *                 }>,
+ *                 loggers?: array<string, array{ // Default: []
+ *                     name?: scalar|null,
+ *                     service?: scalar|null,
+ *                 }>,
+ *             },
+ *             hydrators?: array<string, scalar|null>,
+ *             mappings?: array<string, bool|string|array{ // Default: []
+ *                 mapping?: scalar|null, // Default: true
+ *                 type?: scalar|null,
+ *                 dir?: scalar|null,
+ *                 alias?: scalar|null,
+ *                 prefix?: scalar|null,
+ *                 is_bundle?: bool,
+ *             }>,
+ *             dql?: array{
+ *                 string_functions?: array<string, scalar|null>,
+ *                 numeric_functions?: array<string, scalar|null>,
+ *                 datetime_functions?: array<string, scalar|null>,
+ *             },
+ *             filters?: array<string, string|array{ // Default: []
+ *                 class: scalar|null,
+ *                 enabled?: bool, // Default: false
+ *                 parameters?: array<string, mixed>,
+ *             }>,
+ *             identity_generation_preferences?: array<string, scalar|null>,
+ *         }>,
+ *         resolve_target_entities?: array<string, scalar|null>,
+ *     },
+ * }
+ * @psalm-type DoctrineMigrationsConfig = array{
+ *     enable_service_migrations?: bool, // Whether to enable fetching migrations from the service container. // Default: false
+ *     migrations_paths?: array<string, scalar|null>,
+ *     services?: array<string, scalar|null>,
+ *     factories?: array<string, scalar|null>,
+ *     storage?: array{ // Storage to use for migration status metadata.
+ *         table_storage?: array{ // The default metadata storage, implemented as a table in the database.
+ *             table_name?: scalar|null, // Default: null
+ *             version_column_name?: scalar|null, // Default: null
+ *             version_column_length?: scalar|null, // Default: null
+ *             executed_at_column_name?: scalar|null, // Default: null
+ *             execution_time_column_name?: scalar|null, // Default: null
+ *         },
+ *     },
+ *     migrations?: list<scalar|null>,
+ *     connection?: scalar|null, // Connection name to use for the migrations database. // Default: null
+ *     em?: scalar|null, // Entity manager name to use for the migrations database (available when doctrine/orm is installed). // Default: null
+ *     all_or_nothing?: scalar|null, // Run all migrations in a transaction. // Default: false
+ *     check_database_platform?: scalar|null, // Adds an extra check in the generated migrations to allow execution only on the same platform as they were initially generated on. // Default: true
+ *     custom_template?: scalar|null, // Custom template path for generated migration classes. // Default: null
+ *     organize_migrations?: scalar|null, // Organize migrations mode. Possible values are: "BY_YEAR", "BY_YEAR_AND_MONTH", false // Default: false
+ *     enable_profiler?: bool, // Whether or not to enable the profiler collector to calculate and visualize migration status. This adds some queries overhead. // Default: false
+ *     transactional?: bool, // Whether or not to wrap migrations in a single transaction. // Default: true
+ * }
+ * @psalm-type TwigConfig = array{
+ *     form_themes?: list<scalar|null>,
+ *     globals?: array<string, array{ // Default: []
+ *         id?: scalar|null,
+ *         type?: scalar|null,
+ *         value?: mixed,
+ *     }>,
+ *     autoescape_service?: scalar|null, // Default: null
+ *     autoescape_service_method?: scalar|null, // Default: null
+ *     cache?: scalar|null, // Default: true
+ *     charset?: scalar|null, // Default: "%kernel.charset%"
+ *     debug?: bool, // Default: "%kernel.debug%"
+ *     strict_variables?: bool, // Default: "%kernel.debug%"
+ *     auto_reload?: scalar|null,
+ *     optimizations?: int,
+ *     default_path?: scalar|null, // The default path used to load templates. // Default: "%kernel.project_dir%/templates"
+ *     file_name_pattern?: list<scalar|null>,
+ *     paths?: array<string, mixed>,
+ *     date?: array{ // The default format options used by the date filter.
+ *         format?: scalar|null, // Default: "F j, Y H:i"
+ *         interval_format?: scalar|null, // Default: "%d days"
+ *         timezone?: scalar|null, // The timezone used when formatting dates, when set to null, the timezone returned by date_default_timezone_get() is used. // Default: null
+ *     },
+ *     number_format?: array{ // The default format options for the number_format filter.
+ *         decimals?: int, // Default: 0
+ *         decimal_point?: scalar|null, // Default: "."
+ *         thousands_separator?: scalar|null, // Default: ","
+ *     },
+ *     mailer?: array{
+ *         html_to_text_converter?: scalar|null, // A service implementing the "Symfony\Component\Mime\HtmlToTextConverter\HtmlToTextConverterInterface". // Default: null
+ *     },
+ * }
+ * @psalm-type TwigExtraConfig = array{
+ *     cache?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     html?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     markdown?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     intl?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     cssinliner?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     inky?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     string?: bool|array{
+ *         enabled?: bool, // Default: false
+ *     },
+ *     commonmark?: array{
+ *         renderer?: array{ // Array of options for rendering HTML.
+ *             block_separator?: scalar|null,
+ *             inner_separator?: scalar|null,
+ *             soft_break?: scalar|null,
+ *         },
+ *         html_input?: "strip"|"allow"|"escape", // How to handle HTML input.
+ *         allow_unsafe_links?: bool, // Remove risky link and image URLs by setting this to false. // Default: true
+ *         max_nesting_level?: int, // The maximum nesting level for blocks. // Default: 9223372036854775807
+ *         max_delimiters_per_line?: int, // The maximum number of strong/emphasis delimiters per line. // Default: 9223372036854775807
+ *         slug_normalizer?: array{ // Array of options for configuring how URL-safe slugs are created.
+ *             instance?: mixed,
+ *             max_length?: int, // Default: 255
+ *             unique?: mixed,
+ *         },
+ *         commonmark?: array{ // Array of options for configuring the CommonMark core extension.
+ *             enable_em?: bool, // Default: true
+ *             enable_strong?: bool, // Default: true
+ *             use_asterisk?: bool, // Default: true
+ *             use_underscore?: bool, // Default: true
+ *             unordered_list_markers?: list<scalar|null>,
+ *         },
+ *         ...<mixed>
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
  *     services?: ServicesConfig,
  *     framework?: FrameworkConfig,
  *     ai?: AiConfig,
+ *     doctrine?: DoctrineConfig,
+ *     doctrine_migrations?: DoctrineMigrationsConfig,
+ *     twig?: TwigConfig,
+ *     twig_extra?: TwigExtraConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
+ *         doctrine?: DoctrineConfig,
+ *         doctrine_migrations?: DoctrineMigrationsConfig,
+ *         twig?: TwigConfig,
+ *         twig_extra?: TwigExtraConfig,
  *     },
  *     "when@prod"?: array{
  *         imports?: ImportsConfig,
@@ -1055,6 +1368,10 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
+ *         doctrine?: DoctrineConfig,
+ *         doctrine_migrations?: DoctrineMigrationsConfig,
+ *         twig?: TwigConfig,
+ *         twig_extra?: TwigExtraConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1062,6 +1379,10 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         services?: ServicesConfig,
  *         framework?: FrameworkConfig,
  *         ai?: AiConfig,
+ *         doctrine?: DoctrineConfig,
+ *         doctrine_migrations?: DoctrineMigrationsConfig,
+ *         twig?: TwigConfig,
+ *         twig_extra?: TwigExtraConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,

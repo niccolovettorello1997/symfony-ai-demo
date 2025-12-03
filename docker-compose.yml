@@ -1,0 +1,56 @@
+services:
+  # -------------------------
+  # Symfony PHP-FPM
+  # -------------------------
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    container_name: symfony-php
+    restart: unless-stopped
+    volumes:
+      - .:/var/www/html
+    environment:
+      APP_ENV: dev
+    depends_on:
+      - ollama
+
+  # -------------------------
+  # Nginx
+  # -------------------------
+  nginx:
+    image: nginx:latest
+    container_name: symfony-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - php
+
+  # -------------------------
+  # Ollama
+  # -------------------------
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: >
+      /bin/bash -c "
+      ollama serve &
+      sleep 2 &&
+      ollama pull llama3.2 &&
+      wait
+      "
+
+# -------------------------
+# Persistent Volumes
+# -------------------------
+volumes:
+  ollama_data:
