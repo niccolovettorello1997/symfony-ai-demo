@@ -325,7 +325,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         }>,
  *     },
  *     validation?: bool|array{ // Validation configuration
- *         enabled?: bool, // Default: false
+ *         enabled?: bool, // Default: true
  *         enable_attributes?: bool, // Default: true
  *         static_method?: list<scalar|null>,
  *         translation_domain?: scalar|null, // Default: "validators"
@@ -833,17 +833,17 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             account_id?: string,
  *             api_key?: string,
  *             index_name?: string,
- *             dimensions: int,
+ *             dimensions?: int, // Default: 1536
  *             metric?: string, // Default: "cosine"
- *             endpoint_url?: string,
+ *             endpoint?: string,
  *         }>,
  *         manticore?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             table?: string,
- *             field: string,
- *             type: string,
- *             similarity: string,
- *             dimensions: int,
+ *             field?: string, // Default: "_vectors"
+ *             type?: string, // Default: "hnsw"
+ *             similarity?: string, // Default: "cosine"
+ *             dimensions?: int, // Default: 1536
  *             quantization?: string,
  *         }>,
  *         mariadb?: array<string, array{ // Default: []
@@ -859,9 +859,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             endpoint?: string,
  *             api_key?: string,
  *             index_name?: string,
- *             embedder: string,
- *             vector_field: string,
- *             dimensions: int,
+ *             embedder?: string, // Default: "default"
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
  *             semantic_ratio?: float, // The ratio between semantic (vector) and full-text search (0.0 to 1.0). Default: 1.0 (100% semantic) // Default: 1.0
  *         }>,
  *         memory?: array<string, array{ // Default: []
@@ -870,19 +870,19 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *         milvus?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             database: string,
+ *             database?: string,
  *             collection: string,
- *             vector_field: string,
- *             dimensions: int,
- *             metric_type?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
+ *             metric_type?: string, // Default: "COSINE"
  *         }>,
  *         mongodb?: array<string, array{ // Default: []
  *             client?: string, // Default: "MongoDB\\Client"
  *             database: string,
- *             collection: string,
+ *             collection?: string,
  *             index_name: string,
- *             vector_field: string,
- *             bulk_write?: bool,
+ *             vector_field?: string, // Default: "vector"
+ *             bulk_write?: bool, // Default: false
  *         }>,
  *         neo4j?: array<string, array{ // Default: []
  *             endpoint?: string,
@@ -891,9 +891,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             database?: string,
  *             vector_index_name?: string,
  *             node_name?: string,
- *             vector_field: string,
- *             dimensions: int,
- *             distance: string,
+ *             vector_field?: string, // Default: "embeddings"
+ *             dimensions?: int, // Default: 1536
+ *             distance?: string, // Default: "cosine"
  *             quantization?: bool,
  *         }>,
  *         pinecone?: array<string, array{ // Default: []
@@ -906,8 +906,8 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             dsn?: string,
  *             username?: string,
  *             password?: string,
- *             table_name: string,
- *             vector_field: string,
+ *             table_name?: string,
+ *             vector_field?: string, // Default: "embedding"
  *             distance?: cosine|inner_product|l1|l2, // Distance metric to use for vector similarity search // Default: "l2"
  *             dbal_connection?: string,
  *         }>,
@@ -915,14 +915,14 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             endpoint?: string,
  *             api_key?: string,
  *             collection_name?: string,
- *             dimensions: int,
- *             distance: string,
+ *             dimensions?: int, // Default: 1536
+ *             distance?: string, // Default: "Cosine"
  *             async?: bool,
  *         }>,
  *         redis?: array<string, array{ // Default: []
  *             connection_parameters?: mixed, // see https://github.com/phpredis/phpredis?tab=readme-ov-file#example-1
  *             client?: string, // a service id of a Redis client
- *             index_name: string,
+ *             index_name?: string,
  *             key_prefix?: string, // Default: "vector:"
  *             distance?: \Symfony\AI\Store\Bridge\Redis\Distance::Cosine|\Symfony\AI\Store\Bridge\Redis\Distance::L2|\Symfony\AI\Store\Bridge\Redis\Distance::Ip, // Distance metric to use for vector similarity search // Default: "COSINE"
  *         }>,
@@ -931,9 +931,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             url: string,
  *             api_key: string,
  *             table?: string,
- *             vector_field?: string,
- *             vector_dimension?: int,
- *             function_name?: string,
+ *             vector_field?: string, // Default: "embedding"
+ *             vector_dimension?: int, // Default: 1536
+ *             function_name?: string, // Default: "match_documents"
  *         }>,
  *         surrealdb?: array<string, array{ // Default: []
  *             endpoint?: string,
@@ -941,23 +941,23 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
  *             password?: string,
  *             namespace?: string,
  *             database?: string,
- *             table: string,
- *             vector_field: string,
- *             strategy: string,
- *             dimensions: int,
+ *             table?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             strategy?: string, // Default: "cosine"
+ *             dimensions?: int, // Default: 1536
  *             namespaced_user?: bool,
  *         }>,
  *         typesense?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             collection: string,
- *             vector_field: string,
- *             dimensions: int,
+ *             collection?: string,
+ *             vector_field?: string, // Default: "_vectors"
+ *             dimensions?: int, // Default: 1536
  *         }>,
  *         weaviate?: array<string, array{ // Default: []
  *             endpoint?: string,
  *             api_key: string,
- *             collection: string,
+ *             collection?: string,
  *         }>,
  *     },
  *     message_store?: array{
