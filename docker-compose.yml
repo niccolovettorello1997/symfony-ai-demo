@@ -10,7 +10,6 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www/html
-      - vendor:/var/www/html/vendor
     environment:
       APP_ENV: dev
     depends_on:
@@ -54,5 +53,4 @@ services:
 # Persistent Volumes
 # -------------------------
 volumes:
-  vendor:
   ollama_data:

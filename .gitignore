@@ -24,3 +24,5 @@ phpstan.neon
 /.phpunit.cache/
 /phpunit.xml
 ###< phpunit/phpunit ###
+
+.vscode/

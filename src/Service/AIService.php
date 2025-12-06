@@ -28,8 +28,8 @@ class AIService
     public function chat(string $message): ResultInterface
     {
         $messages = new MessageBag(
-            Message::forSystem(content: $this->chatSystemPrompt),
-            Message::ofUser(content: $message)
+            Message::forSystem($this->chatSystemPrompt),
+            Message::ofUser($message)
         );
 
         return $this->agent->call(messages: $messages);
@@ -45,8 +45,8 @@ class AIService
     public function summarize(string $text): ResultInterface
     {
         $messages = new MessageBag(
-            Message::forSystem(content: $this->summarizationSystemPrompt),
-            Message::ofUser(content: $text)
+            Message::forSystem($this->summarizationSystemPrompt),
+            Message::ofUser($text)
         );
 
         return $this->agent->call(messages: $messages);
@@ -68,12 +68,12 @@ class AIService
 
         // Append the list of custom labels to the system prompt if it's provided
         if (null !== $labels) {
-            $systemPrompt = $this->classificationSystemPrompt . ' ' . \implode($labels);
+            $systemPrompt = $this->classificationSystemPrompt . ' ' . \implode(', ', $labels);
         }
 
         $messages = new MessageBag(
-            Message::forSystem(content: $systemPrompt),
-            Message::ofUser(content: $text)
+            Message::forSystem($systemPrompt),
+            Message::ofUser($text)
         );
 
         return $this->agent->call(messages: $messages);
