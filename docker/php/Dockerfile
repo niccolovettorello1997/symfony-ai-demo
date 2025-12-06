@@ -16,4 +16,7 @@ RUN pecl install xdebug \
         echo "xdebug.client_port=9003"; \
     } > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 WORKDIR /var/www/html
