@@ -31,6 +31,7 @@ parameters:
     - If none is a perfect match, choose the closest reasonable category.
     - Do not invent categories.
     - Do not explain or justify the classification unless explicitly asked.
+    - Format answers with clean Markdown.
     Always return a single, clean label.
 
   ai.classification_fallback_system_prompt: |

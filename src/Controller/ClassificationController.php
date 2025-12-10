@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\DTO\AIResponse;
 use App\DTO\ClassificationRequest;
 use App\Service\ClassificationService;
+use App\Utils\HTMLToTextConverter;
 use League\CommonMark\CommonMarkConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,7 @@ class ClassificationController extends AbstractController
     public function __construct(
         private readonly ClassificationService $classificationService,
         private readonly CommonMarkConverter $markdownConverter,
+        private readonly HTMLToTextConverter $htmlToTextConverter,
     ) {
     }
 
@@ -33,9 +35,13 @@ class ClassificationController extends AbstractController
                 labels: $classification->labels
             );
 
+        // Markdown -> HTML --> Text
+        $htmlContent = $this->markdownConverter->convert($result->getContent())->getContent();
+        $textContent = $this->htmlToTextConverter->toPlainText($htmlContent);
+
         return $this->json(
             data: new AIResponse(
-                reply: $result->getContent()
+                reply: $textContent
             )
         );
     }

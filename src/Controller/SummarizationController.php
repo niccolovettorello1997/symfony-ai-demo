@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\DTO\AIResponse;
 use App\DTO\SummarizationRequest;
 use App\Service\SummarizationService;
+use App\Utils\HTMLToTextConverter;
 use League\CommonMark\CommonMarkConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,7 @@ class SummarizationController extends AbstractController
     public function __construct(
         private readonly SummarizationService $summarizationService,
         private readonly CommonMarkConverter $markdownConverter,
+        private readonly HTMLToTextConverter $htmlToTextConverter,
     ) {
     }
 
@@ -30,9 +32,13 @@ class SummarizationController extends AbstractController
         $result = $this->summarizationService
             ->summarize(text: $summarization->text);
 
+        // Markdown -> HTML -> Plain Text
+        $htmlContent = $this->markdownConverter->convert($result->getContent())->getContent();
+        $textContent = $this->htmlToTextConverter->toPlainText($htmlContent);
+
         return $this->json(
             data: new AIResponse(
-                reply: $result->getContent()
+                reply: $textContent
             )
         );
     }

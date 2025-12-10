@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\DTO\AIResponse;
 use App\DTO\ChatMessageRequest;
 use App\Service\ChatService;
+use App\Utils\HTMLToTextConverter;
 use League\CommonMark\CommonMarkConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,7 @@ class ChatController extends AbstractController
     public function __construct(
         private readonly ChatService $chatService,
         private readonly CommonMarkConverter $markdownConverter,
+        private readonly HTMLToTextConverter $htmlToTextConverter,
     ) {
     }
 
@@ -29,7 +31,11 @@ class ChatController extends AbstractController
     ): JsonResponse {
         $result = $this->chatService->replyTo(message: $chatMessage->message);
 
-        return $this->json(new AIResponse($result->getContent()));
+        // Markdown -> HTML --> Text
+        $htmlContent = $this->markdownConverter->convert($result->getContent())->getContent();
+        $textContent = $this->htmlToTextConverter->toPlainText($htmlContent);
+
+        return $this->json(new AIResponse($textContent));
     }
 
     #[Route(path: '/chat', name: 'chat_ui', methods: ['GET','POST'])]
