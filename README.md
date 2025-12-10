@@ -241,6 +241,7 @@ Covers:
 * SummarizationService
 * ClassificationService
 * AgentCaller
+* HTMLToTextConverter
 
 ---
 
@@ -283,6 +284,7 @@ src/
 │   └── ClassificationRequest.php
 │
 └── Utils/
+    ├── HTMLToTextConverter.php
     └── AgentCaller.php
 ```
 ---
