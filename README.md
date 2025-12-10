@@ -193,6 +193,40 @@ Changes are applied automatically at runtime and take effect on the next request
 
 ---
 
+## API Endpoints (Simple JSON Responses)
+
+In addition to the Twig UI, the application exposes three lightweight JSON endpoints that allow programmatic access to the AI services.
+
+### **1. POST `/chat/new-message`**
+
+Send a chat message to the AI agent.
+
+[Example request and response](./examples/chat-example.md)
+
+---
+
+### **2. POST `/summarize`**
+
+Provide arbitrary text and receive a summary.
+
+[Example request and response](./examples/summarization-example.md)
+
+---
+
+### **3. POST `/classify`**
+
+Classify text using user-provided labels or the built-in taxonomy.
+
+[Example request and response](./examples/classification-example.md)
+
+---
+
+### Note on Markdown Responses
+
+For UI pages, Markdown is rendered into HTML. For JSON endpoints, the raw Markdown returned by the agent is post-processed into plain text.
+
+---
+
 ## Running Tests
 
 ### **Unit Tests (recommended default)**
