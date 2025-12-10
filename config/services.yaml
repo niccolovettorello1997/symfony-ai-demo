@@ -21,3 +21,19 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    League\CommonMark\CommonMarkConverter:
+        arguments: []
+
+    App\Service\ChatService:
+        arguments:
+            $chatSystemPrompt: '%ai.chat_system_prompt%'
+
+    App\Service\SummarizationService:
+        arguments:
+            $summarizationSystemPrompt: '%ai.summarization_system_prompt%'
+
+    App\Service\ClassificationService:
+        arguments:
+            $classificationSystemPrompt: '%ai.classification_system_prompt%'
+            $classificationFallbackSystemPrompt: '%ai.classification_fallback_system_prompt%'
