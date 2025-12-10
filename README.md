@@ -27,6 +27,32 @@ This project is intentionally small and easy to understand — ideal for present
 
 ---
 
+## How to show this demo in 2 minutes
+
+The demo uses Ollama as the AI backend. Downloading and initializing the model can take several minutes and requires a few GB of disk space.
+
+To quickly explore the demo without waiting, check the example request/response files in the `examples` folder. These files show typical inputs and outputs for all endpoints (chat, summarization, classification).
+
+1. **Check the examples**  
+   - Chat: [`examples/chat-example.md`](./examples/chat-example.md)  
+   - Summarization: [`examples/summarization-example.md`](./examples/summarization-example.md)  
+   - Classification: [`examples/classification-example.md`](./examples/classification-example.md)
+
+2. **Quick curl test** (optional, if the container is running):
+    ```bash
+    curl -X POST "http://localhost:8080/chat/new-message" -d '{"message":"Hello, what is your name?"}'
+    ```
+
+3. **Key takeaways**
+
+   * Minimal Symfony 8 app integrating AI via Symfony AI bundle
+   * Clear separation of AI, service layer and controller endpoints
+   * Configurable prompts in YAML
+   * Dockerized for easy experimentation
+   * Fully demonstrable using the example files without downloading the AI model
+
+---
+
 ## Privacy Disclaimer
 
 *All inference runs locally on your machine via Ollama. No data is sent to external services.*
