@@ -27,6 +27,25 @@ This project is intentionally small and easy to understand — ideal for present
 
 ---
 
+## **Table of Contents**
+
+- [How to show this demo in 2 minutes](#how-to-show-this-demo-in-2-minutes)
+- [Privacy Disclaimer](#privacy-disclaimer)
+- [Features Overview](#features-overview)
+- [Architecture Diagram](#architecture-diagram)
+- [Minimum Hardware Requirements](#minimum-hardware-requirements)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [System Prompt Configuration](#system-prompt-configuration)
+- [API Endpoints (Simple JSON Responses)](#api-endpoints-simple-json-responses)
+- [Running Tests](#running-tests)
+- [Project Structure](#project-structure)
+- [Code Quality: PHP CS Fixer & PHPStan](#code-quality-php-cs-fixer--phpstan)
+- [Motivation](#motivation)
+- [Possible Extensions](#possible-extensions)
+- [License](#license)
+---
+
 ## How to show this demo in 2 minutes
 
 The demo uses Ollama as the AI backend. Downloading and initializing the model can take several minutes and requires a few GB of disk space.
@@ -46,7 +65,7 @@ To quickly explore the demo without waiting, check the example request/response 
 3. **Key takeaways**
 
    * Minimal Symfony 8 app integrating AI via Symfony AI bundle
-   * Clear separation of AI, service layer and controller endpoints
+   * Clear separation of AI agents, service layer and controller endpoints
    * Configurable prompts in YAML
    * Dockerized for easy experimentation
    * Fully demonstrable using the example files without downloading the AI model
@@ -94,7 +113,7 @@ Minimal Twig interface:
 Clean separation:
 
 ```
-Controller → DTO → Service → AgentCaller → Symfony AI Agent
+Controller → DTO → Service → Agent → Symfony AI
 ```
 
 ---
@@ -105,17 +124,23 @@ Controller → DTO → Service → AgentCaller → Symfony AI Agent
 flowchart TD
 
     %% UI
-    UI[Twig UI] -->|HTTP Request| CTRL[Controllers]
+    UI[Twig UI] -->|HTTP Request| CTRL[Controllers <br> Chat/Summarization/Classification]
 
+    %% Validation
     CTRL --> DTO[DTOs + Validation]
 
     %% Services
-    DTO --> SERVICES[Service Layer]
+    DTO --> SERVICES[Service Layer <br> Chat/Summarization/Classification]
+    SERVICES --> AGENT[Agent <br> Chat/Summarization/Classification]
 
-    SERVICES --> CALLER[AgentCaller]
-    CALLER --> AGENT[Symfony AI]
-    AGENT --> OLLAMA[Ollama]
+    AGENT --> SYMFONY_AGENT[Symfony AI]
+
+    SYMFONY_AGENT --> OLLAMA[Ollama]
 ```
+
+**Note**
+
+*The same architectural flow is used for Chat, Summarization, and Classification. Each use case is implemented via a dedicated Agent with its own system prompt and configuration.*
 
 ---
 
@@ -193,7 +218,19 @@ composer install
 
 ---
 
-### 5. Open the UI
+### 5. Load model into RAM
+
+```bash
+docker exec -it ollama ollama run llama3.2
+```
+
+**Note**
+
+*This commands loads the Ollama model into RAM for faster responses. To exit the model simply type `/bye` in the Ollama container command prompt.*
+
+---
+
+### 6. Open the UI
 
 [http://localhost:8080/chat](http://localhost:8080/chat)
 
@@ -266,7 +303,9 @@ Covers:
 * ChatService
 * SummarizationService
 * ClassificationService
-* AgentCaller
+* ChatAgent
+* SummarizationAgent
+* ClassificationAgent
 * HTMLToTextConverter
 
 ---
@@ -293,6 +332,12 @@ This verifies:
 
 ```
 src/
+├── AI/
+│   ├── Agent/
+│   ├── ChatAgent.php
+│   ├── SummarizationAgent.php
+│   └── ClassificationAgent.php
+|
 ├── Controller/
 │   ├── ChatController.php
 │   ├── SummarizationController.php
@@ -310,8 +355,9 @@ src/
 │   └── ClassificationRequest.php
 │
 └── Utils/
+    ├── CommonMarkMarkdownToHtml.php
     ├── HTMLToTextConverter.php
-    └── AgentCaller.php
+    └── MarkdownToHtmlInterface.php
 ```
 ---
 

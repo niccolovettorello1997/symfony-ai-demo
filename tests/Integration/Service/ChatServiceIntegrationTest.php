@@ -22,12 +22,17 @@ class ChatServiceIntegrationTest extends KernelTestCase
         $this->chatService = self::getContainer()->get(ChatService::class);
     }
 
-    public function test_chat_returns_result(): void
+    public function test_chat_returns_result_html(): void
     {
-        $result = $this->chatService->replyTo('Hello AI');
-        $content = $result->getContent();
+        $result = $this->chatService->replyToHtml('Hello AI');
 
-        self::assertNotEmpty($content);
-        self::assertIsString($content);
+        self::assertNotEmpty($result);
+    }
+
+    public function test_chat_returns_result_plain_text(): void
+    {
+        $result = $this->chatService->replyToPlainText('Hello AI');
+
+        self::assertNotEmpty($result);
     }
 }

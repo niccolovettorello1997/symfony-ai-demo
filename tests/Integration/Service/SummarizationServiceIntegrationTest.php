@@ -22,12 +22,17 @@ class SummarizationServiceIntegrationTest extends KernelTestCase
         $this->summarizationService = self::getContainer()->get(SummarizationService::class);
     }
 
-    public function test_summarization_returns_result(): void
+    public function test_summarization_returns_result_html(): void
     {
-        $result = $this->summarizationService->summarize('This is a long text to summarize.');
-        $content = $result->getContent();
+        $result = $this->summarizationService->summarizeHtml('This is a long text to summarize.');
 
-        self::assertNotEmpty($content);
-        self::assertIsString($content);
+        self::assertNotEmpty($result);
+    }
+
+    public function test_summarization_returns_result_plain_text(): void
+    {
+        $result = $this->summarizationService->summarizePlainText('This is a long text to summarize.');
+
+        self::assertNotEmpty($result);
     }
 }
