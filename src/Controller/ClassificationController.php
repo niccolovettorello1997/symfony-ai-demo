@@ -7,8 +7,6 @@ namespace App\Controller;
 use App\DTO\AIResponse;
 use App\DTO\ClassificationRequest;
 use App\Service\ClassificationService;
-use App\Utils\HTMLToTextConverter;
-use League\CommonMark\CommonMarkConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +18,6 @@ class ClassificationController extends AbstractController
 {
     public function __construct(
         private readonly ClassificationService $classificationService,
-        private readonly CommonMarkConverter $markdownConverter,
-        private readonly HTMLToTextConverter $htmlToTextConverter,
     ) {
     }
 
@@ -29,21 +25,13 @@ class ClassificationController extends AbstractController
     public function classify(
         #[MapRequestPayload] ClassificationRequest $classification
     ): JsonResponse {
-        $result = $this->classificationService
-            ->classify(
-                text: $classification->text,
-                labels: $classification->labels
+        $reply = $this->classificationService
+            ->classifyPlainText(
+                $classification->text,
+                $classification->labels
             );
 
-        // Markdown -> HTML --> Text
-        $htmlContent = $this->markdownConverter->convert($result->getContent())->getContent();
-        $textContent = $this->htmlToTextConverter->toPlainText($htmlContent);
-
-        return $this->json(
-            data: new AIResponse(
-                reply: $textContent
-            )
-        );
+        return $this->json(new AIResponse($reply));
     }
 
     #[Route(path: '/classification', name: 'classification_ui', methods: ['GET', 'POST'])]
@@ -55,6 +43,7 @@ class ClassificationController extends AbstractController
             $text = $request->request->get('text', '');
             $labels = $request->request->get('labels', null);
 
+            // Normalize labels and explode them into an array
             if (is_string($labels)) {
                 $labels = array_filter(
                     array_map(
@@ -69,13 +58,16 @@ class ClassificationController extends AbstractController
             }
 
             if ($text !== '') {
-                $result = $this->classificationService->classify($text, ($labels !== []) ? $labels : null);
-                $reply = $result->getContent();
+                $reply = $this->classificationService
+                    ->classifyHtml(
+                        $text,
+                        ($labels !== []) ? $labels : null
+                    );
             }
         }
 
         return $this->render('classification/index.html.twig', [
-            'reply' => $this->markdownConverter->convert($reply ?? '')->getContent(),
+            'reply' => $reply,
         ]);
     }
 }

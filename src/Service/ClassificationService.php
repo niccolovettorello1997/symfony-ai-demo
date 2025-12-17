@@ -4,45 +4,81 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Utils\AgentCaller;
-use Symfony\AI\Platform\Result\ResultInterface;
+use App\AI\Agent\ClassificationAgent;
+use App\Utils\HTMLToTextConverter;
+use App\Utils\MarkdownToHtmlInterface;
 
 class ClassificationService
 {
     public function __construct(
-        private readonly string $classificationSystemPrompt,
-        private readonly string $classificationFallbackSystemPrompt,
-        private readonly AgentCaller $agentCaller
+        private readonly ClassificationAgent $classificationAgent,
+        private readonly MarkdownToHtmlInterface $markdownToHtml,
+        private readonly HTMLToTextConverter $htmlToTextConverter,
     ) {
     }
 
     /**
-     * Sends a text to the agent.
-     * Set the agent to behave like an optimal classification agent.
-     * If no set of labels is provided within the user message,
-     * uses a fallback prompt to instruct the agent accordingly.
+     * Generates sub-prompt for labels.
      *
-     * @param  string $text
      * @param  array<string>|null $labels
-     * @return ResultInterface
+     * @return string|null
      */
-    public function classify(string $text, ?array $labels = null): ResultInterface
+    private function getLabelsSubPrompt(?array $labels): ?string
     {
-        $systemPrompt = $this->classificationFallbackSystemPrompt;
+        // Generate the sub-prompt for labels if provided
+        $labelsSubPrompt = null;
 
-        // Append the list of custom labels to the system prompt if it's provided
         if (null !== $labels) {
-            $systemPrompt = sprintf(
-                '%s Labels: %s',
-                $this->classificationSystemPrompt,
+            $labelsSubPrompt = sprintf(
+                ' User-defined labels: %s',
                 implode(', ', $labels)
             );
         }
 
-        return $this->agentCaller
-            ->callWithPrompt(
-                $systemPrompt,
-                $text
+        return $labelsSubPrompt;
+    }
+
+    /**
+     * Sends a text with optional user-defined labels to the classification agent
+     * and returns the rensponse in html.
+     *
+     * @param  string $text
+     * @param  array<string>|null $labels
+     * @return string
+     */
+    public function classifyHtml(string $text, ?array $labels = null): string
+    {
+        $labelsSubPrompt = $this->getLabelsSubPrompt($labels);
+
+        $reply = $this->classificationAgent
+            ->classify(
+                $text,
+                $labelsSubPrompt
             );
+
+        return $this->markdownToHtml->convert($reply);
+    }
+
+    /**
+     * Sends a text with optional user-defined labels to the classification agent
+     * and returns the response in plain text.
+     *
+     * @param  string $text
+     * @param  array<string>|null $labels
+     * @return string
+     */
+    public function classifyPlainText(string $text, ?array $labels = null): string
+    {
+        $labelsSubPrompt = $this->getLabelsSubPrompt($labels);
+
+        $reply = $this->classificationAgent
+            ->classify(
+                $text,
+                $labelsSubPrompt
+            );
+
+        // Markdown -> HTML -> Text
+        $htmlContent = $this->markdownToHtml->convert($reply);
+        return $this->htmlToTextConverter->toPlainText($htmlContent);
     }
 }

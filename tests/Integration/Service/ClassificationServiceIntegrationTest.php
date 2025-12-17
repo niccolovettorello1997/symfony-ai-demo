@@ -22,19 +22,33 @@ class ClassificationServiceIntegrationTest extends KernelTestCase
         $this->classificationService = self::getContainer()->get(ClassificationService::class);
     }
 
-    public function test_classification_returns_result(): void
+    public function test_classification_returns_result_html(): void
     {
         $labels = ['Positive', 'Negative', 'Neutral'];
 
-        $result = $this->classificationService->classify('Love Symfony AI!', $labels);
-        $content = $result->getContent();
+        $result = $this->classificationService->classifyHtml('Love Symfony AI!', $labels);
 
         $found = array_filter(
             $labels,
-            fn ($label) => str_contains($content, $label)
+            fn ($label) => str_contains($result, $label)
         );
 
-        self::assertNotEmpty($content);
+        self::assertNotEmpty($result);
+        self::assertNotEmpty($found);
+    }
+
+    public function test_classification_returns_result_plain_text(): void
+    {
+        $labels = ['Positive', 'Negative', 'Neutral'];
+
+        $result = $this->classificationService->classifyPlainText('Love Symfony AI!', $labels);
+
+        $found = array_filter(
+            $labels,
+            fn ($label) => str_contains($result, $label)
+        );
+
+        self::assertNotEmpty($result);
         self::assertNotEmpty($found);
     }
 }

@@ -25,15 +25,14 @@ services:
     League\CommonMark\CommonMarkConverter:
         arguments: []
 
-    App\Service\ChatService:
+    App\AI\Agent\ChatAgent:
         arguments:
-            $chatSystemPrompt: '%ai.chat_system_prompt%'
+            $systemPrompt: '%ai.chat_system_prompt%'
 
-    App\Service\SummarizationService:
+    App\AI\Agent\SummarizationAgent:
         arguments:
-            $summarizationSystemPrompt: '%ai.summarization_system_prompt%'
+            $systemPrompt: '%ai.summarization_system_prompt%'
 
-    App\Service\ClassificationService:
+    App\AI\Agent\ClassificationAgent:
         arguments:
-            $classificationSystemPrompt: '%ai.classification_system_prompt%'
-            $classificationFallbackSystemPrompt: '%ai.classification_fallback_system_prompt%'
+            $systemPrompt: '%ai.classification_system_prompt%'
