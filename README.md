@@ -226,7 +226,9 @@ docker exec -it ollama ollama run llama3.2
 
 **Note**
 
-*This commands loads the Ollama model into RAM for faster responses. To exit the model simply type `/bye` in the Ollama container command prompt.*
+*This commands loads the Ollama model into RAM for faster responses. By default, the model is kept in memory for 20 minutes if inactive (check the `OLLAMA_KEEP_ALIVE` parameter within `docker-compose.yml`)*
+
+*To exit the model simply type `/bye` in the Ollama container command prompt.*
 
 ---
 
