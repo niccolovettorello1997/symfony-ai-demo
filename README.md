@@ -36,6 +36,7 @@ This project is intentionally small and easy to understand — ideal for present
 - [Minimum Hardware Requirements](#minimum-hardware-requirements)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
+- [Agent Configuration](#agent-configuration)
 - [System Prompt Configuration](#system-prompt-configuration)
 - [API Endpoints (Simple JSON Responses)](#api-endpoints-simple-json-responses)
 - [Running Tests](#running-tests)
@@ -241,6 +242,12 @@ With the navigation bar you can select:
 * `/chat`
 * `/summarization`
 * `/classification`
+
+---
+
+## Agent Configuration
+
+In the config file `ai.yaml` other possible agent configurations are present and commented. Their main purpose is to show how simple and fast is to switch from an agent to another without having to modify business logic.
 
 ---
 
