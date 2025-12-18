@@ -4,6 +4,17 @@ ai:
         ollama:
             host_url: 'http://ollama:11434'
 
+        # eleven_labs:
+        #     host: '%env(ELEVEN_LABS_HOST)%'
+        #     api_key: '%env(ELEVEN_LABS_API_KEY)%'
+        #     output_path: '%env(ELEVEN_LABS_OUTPUT_PATH)%'
+
+        # gemini:
+        #     api_key: '%env(GEMINI_API_KEY)%'
+
+        # openai:
+        #     api_key: '%env(OPENAI_API_KEY)%'
+
     agent:
         default:
             model: 'llama3.2'
