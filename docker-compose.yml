@@ -35,6 +35,8 @@ services:
   # -------------------------
   ollama:
     image: ollama/ollama:latest
+    environment:
+      - OLLAMA_KEEP_ALIVE=20m  # Keep the model in memory for 20 minutes of inactivity
     container_name: ollama
     restart: unless-stopped
     ports:
