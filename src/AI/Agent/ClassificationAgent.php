@@ -7,11 +7,12 @@ namespace App\AI\Agent;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\MessageBag;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 class ClassificationAgent
 {
     public function __construct(
-        private readonly string $systemPrompt,
+        #[Target('ai.agent.classification')]
         private readonly AgentInterface $agent,
     ) {
     }
@@ -21,22 +22,18 @@ class ClassificationAgent
      * to the classification AI agent.
      *
      * @param  string $userText
-     * @param  string|null $labelsSubPrompt
+     * @param  string|null $customLabelsMessage
      * @return string
      */
-    public function classify(string $userText, ?string $labelsSubPrompt = null): string
+    public function classify(string $userText, ?string $customLabelsMessage = null): string
     {
-        $systemPrompt = $this->systemPrompt;
-
-        // Append custom labels sub-prompt if provided
-        if (null !== $labelsSubPrompt) {
-            $systemPrompt .= ' ' . $labelsSubPrompt;
-        }
-
         $messages = new MessageBag(
-            Message::forSystem($systemPrompt),
             Message::ofUser($userText)
         );
+
+        if (null !== $customLabelsMessage) {
+            $messages->add(Message::ofUser($customLabelsMessage));
+        }
 
         return $this->agent->call($messages)->getContent();
     }

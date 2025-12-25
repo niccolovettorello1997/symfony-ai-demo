@@ -16,5 +16,15 @@ ai:
         #     api_key: '%env(OPENAI_API_KEY)%'
 
     agent:
-        default:
+        chat:
             model: 'llama3.2'
+            prompt:
+                file: '%kernel.project_dir%/prompts/chat.json'
+        summarization:
+            model: 'llama3.2'
+            prompt:
+                file: '%kernel.project_dir%/prompts/summarization.json'
+        classification:
+            model: 'llama3.2'
+            prompt:
+                file: '%kernel.project_dir%/prompts/classification.json'

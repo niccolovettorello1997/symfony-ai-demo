@@ -253,13 +253,16 @@ In the config file `ai.yaml` other possible agent configurations are present and
 
 ## System Prompt Configuration
 
-All system prompts used by the AI agents are fully configurable and centralized in the file:
+All system prompts used by the AI agents are fully configurable and gathered within the folder `prompts` with the following structure:
 
 ```
-config/packages/ai_system_prompts.yaml
+prompts/
+├── chat.json
+├── summarization.json
+└── classification.json
 ```
 
-This file defines the system-level instructions for each agent (chat, summarization, and classification).
+Every file defines the system-level instructions for each agent (chat, summarization, and classification).
 Editing these values allows you to tailor the model’s behavior without modifying any PHP code.
 Changes are applied automatically at runtime and take effect on the next request, making prompt iterations fast and convenient.
 

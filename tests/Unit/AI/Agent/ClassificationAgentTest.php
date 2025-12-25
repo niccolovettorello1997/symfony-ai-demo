@@ -15,7 +15,6 @@ class ClassificationAgentTest extends TestCase
 {
     public function test_classify_builds_messages_and_returns_response(): void
     {
-        $systemPrompt = 'You are a classification agent.';
         $userText  = 'Hello Symfony AI!';
         $labels = 'User defined labels: positive, negative, neutral';
 
@@ -29,29 +28,32 @@ class ClassificationAgentTest extends TestCase
         $agent
             ->expects($this->once())
             ->method('call')
-            ->with(self::callback(function (MessageBag $bag) use ($systemPrompt, $userText, $labels): bool {
+            ->with(self::callback(function (MessageBag $bag) use ($userText, $labels): bool {
                 $messages = iterator_to_array($bag);
 
                 self::assertCount(2, $messages);
 
-                self::assertSame(
-                    $systemPrompt . ' ' . $labels,
-                    $messages[0]->getContent()
-                );
-
                 /** @var Text $userMessageContent */
-                $userMessageContent = $messages[1]->getContent()[0];
+                $userMessageContent = $messages[0]->getContent()[0];
 
                 self::assertSame(
                     $userText,
                     $userMessageContent->getText()
                 );
 
+                /** @var Text $userCustomLabelsMessage */
+                $userCustomLabelsMessage = $messages[1]->getContent()[0];
+
+                self::assertSame(
+                    $labels,
+                    $userCustomLabelsMessage->getText()
+                );
+
                 return true;
             }))
             ->willReturn($result);
 
-        $classificationAgent = new ClassificationAgent($systemPrompt, $agent);
+        $classificationAgent = new ClassificationAgent($agent);
 
         $response = $classificationAgent->classify($userText, $labels);
 

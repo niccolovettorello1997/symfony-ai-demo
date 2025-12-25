@@ -24,15 +24,3 @@ services:
 
     League\CommonMark\CommonMarkConverter:
         arguments: []
-
-    App\AI\Agent\ChatAgent:
-        arguments:
-            $systemPrompt: '%ai.chat_system_prompt%'
-
-    App\AI\Agent\SummarizationAgent:
-        arguments:
-            $systemPrompt: '%ai.summarization_system_prompt%'
-
-    App\AI\Agent\ClassificationAgent:
-        arguments:
-            $systemPrompt: '%ai.classification_system_prompt%'

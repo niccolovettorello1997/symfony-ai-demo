@@ -15,7 +15,6 @@ class ChatAgentTest extends TestCase
 {
     public function test_chat_builds_messages_and_returns_response(): void
     {
-        $systemPrompt = 'You are a chat agent.';
         $userMessage  = 'Hello';
 
         $result = $this->createMock(ResultInterface::class);
@@ -28,18 +27,13 @@ class ChatAgentTest extends TestCase
         $agent
             ->expects($this->once())
             ->method('call')
-            ->with(self::callback(function (MessageBag $bag) use ($systemPrompt, $userMessage): bool {
+            ->with(self::callback(function (MessageBag $bag) use ($userMessage): bool {
                 $messages = iterator_to_array($bag);
 
-                self::assertCount(2, $messages);
-
-                self::assertSame(
-                    $systemPrompt,
-                    $messages[0]->getContent()
-                );
+                self::assertCount(1, $messages);
 
                 /** @var Text $userMessageContent */
-                $userMessageContent = $messages[1]->getContent()[0];
+                $userMessageContent = $messages[0]->getContent()[0];
 
                 self::assertSame(
                     $userMessage,
@@ -50,7 +44,7 @@ class ChatAgentTest extends TestCase
             }))
             ->willReturn($result);
 
-        $chatAgent = new ChatAgent($systemPrompt, $agent);
+        $chatAgent = new ChatAgent($agent);
 
         $response = $chatAgent->chat($userMessage);
 

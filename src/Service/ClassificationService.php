@@ -23,19 +23,19 @@ class ClassificationService
      * @param  array<string>|null $labels
      * @return string|null
      */
-    private function getLabelsSubPrompt(?array $labels): ?string
+    private function getCustomLabelsMessage(?array $labels): ?string
     {
         // Generate the sub-prompt for labels if provided
-        $labelsSubPrompt = null;
+        $customLabelsMessage = null;
 
         if (null !== $labels) {
-            $labelsSubPrompt = sprintf(
-                ' User-defined labels: %s',
+            $customLabelsMessage = sprintf(
+                'User-defined labels: %s',
                 implode(', ', $labels)
             );
         }
 
-        return $labelsSubPrompt;
+        return $customLabelsMessage;
     }
 
     /**
@@ -48,12 +48,12 @@ class ClassificationService
      */
     public function classifyHtml(string $text, ?array $labels = null): string
     {
-        $labelsSubPrompt = $this->getLabelsSubPrompt($labels);
+        $customLabelsMessage = $this->getCustomLabelsMessage($labels);
 
         $reply = $this->classificationAgent
             ->classify(
                 $text,
-                $labelsSubPrompt
+                $customLabelsMessage
             );
 
         return $this->markdownToHtml->convert($reply);
@@ -69,12 +69,12 @@ class ClassificationService
      */
     public function classifyPlainText(string $text, ?array $labels = null): string
     {
-        $labelsSubPrompt = $this->getLabelsSubPrompt($labels);
+        $customLabelsMessage = $this->getCustomLabelsMessage($labels);
 
         $reply = $this->classificationAgent
             ->classify(
                 $text,
-                $labelsSubPrompt
+                $customLabelsMessage
             );
 
         // Markdown -> HTML -> Text
