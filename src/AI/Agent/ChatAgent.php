@@ -7,11 +7,12 @@ namespace App\AI\Agent;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\MessageBag;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 class ChatAgent
 {
     public function __construct(
-        private readonly string $systemPrompt,
+        #[Target('ai.agent.chat')]
         private readonly AgentInterface $agent,
     ) {
     }
@@ -25,7 +26,6 @@ class ChatAgent
     public function chat(string $userMessage): string
     {
         $messages = new MessageBag(
-            Message::forSystem($this->systemPrompt),
             Message::ofUser($userMessage)
         );
 

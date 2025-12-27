@@ -7,11 +7,12 @@ namespace App\AI\Agent;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\AI\Platform\Message\Message;
 use Symfony\AI\Platform\Message\MessageBag;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 
 class SummarizationAgent
 {
     public function __construct(
-        private readonly string $systemPrompt,
+        #[Target('ai.agent.summarization')]
         private readonly AgentInterface $agent,
     ) {
     }
@@ -25,7 +26,6 @@ class SummarizationAgent
     public function summarize(string $userText): string
     {
         $messages = new MessageBag(
-            Message::forSystem($this->systemPrompt),
             Message::ofUser($userText)
         );
 
