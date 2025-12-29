@@ -427,6 +427,7 @@ This repository acts as a *“reference implementation”* for cleanly integrati
 * Multi-turn chat with context bag
 * Selection of prompt presets
 * JSON-mode classification results
+* Improved post-processing of the response format (`Markdown` and `HTML`)
 
 ---
 
